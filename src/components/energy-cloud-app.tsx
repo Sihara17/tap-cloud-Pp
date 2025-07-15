@@ -30,6 +30,13 @@ export default function EnergyCloudApp() {
     setWalletAddress(dummyAddress);
     setIsWalletConnected(true);
   };
+  
+  const handleEnergyTap = () => {
+    if (energy > 0) {
+      setEnergy((prev) => prev - 1);
+      setPoints((prev) => prev + 1);
+    }
+  };
 
   const truncatedAddress = walletAddress
     ? `${walletAddress.substring(0, 6)}...${walletAddress.substring(walletAddress.length - 4)}`
@@ -51,7 +58,14 @@ export default function EnergyCloudApp() {
           <main className="flex flex-col items-center text-center space-y-6">
             <div className="relative flex justify-center items-center mb-4">
                <div className="absolute w-32 h-32 rounded-full animate-glow"></div>
-               <CloudLightning className="relative text-primary" size={96} strokeWidth={1.5} />
+                <button
+                  onClick={handleEnergyTap}
+                  disabled={energy <= 0 || !isLoggedIn}
+                  className="relative text-primary transition-transform duration-100 ease-in-out active:scale-95 disabled:text-muted-foreground/50 disabled:cursor-not-allowed focus:outline-none"
+                  aria-label="Tap to get points"
+                >
+                  <CloudLightning size={96} strokeWidth={1.5} />
+                </button>
             </div>
 
             <h1 className="text-4xl font-bold font-headline text-primary">Energy Cloud</h1>
