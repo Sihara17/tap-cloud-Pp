@@ -1,26 +1,50 @@
-
 "use client";
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { CloudLightning, Wallet, Zap, Coins, Home, Map, Rocket } from 'lucide-react';
-import { useAppContext } from '@/context/app-context';
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { CloudLightning, Wallet, Zap, Coins, Home, Map, Rocket } from "lucide-react";
+import { useAppContext } from "@/context/app-context";
+import { initLiff } from "@/lib/liff";
 
-export default function EnergyCloudApp({ currentPage = 'home' }: { currentPage?: 'home' | 'quest' | 'boost' }) {
+export default function EnergyCloudApp({ currentPage = "home" }: { currentPage?: "home" | "quest" | "boost" }) {
   const router = useRouter();
   const {
-    isLoggedIn, setIsLoggedIn,
-    isWalletConnected, setIsWalletConnected,
-    walletAddress, setWalletAddress,
-    points, setPoints,
-    energy, setEnergy,
-    maxEnergy
+    isLoggedIn,
+    setIsLoggedIn,
+    isWalletConnected,
+    setIsWalletConnected,
+    walletAddress,
+    setWalletAddress,
+    points,
+    setPoints,
+    energy,
+    setEnergy,
+    maxEnergy,
   } = useAppContext();
 
+  // 🚀 Auto login LINE on load
+  useEffect(() => {
+    const loginWithLine = async () => {
+      try {
+        const profile = await initLiff();
+        if (profile) {
+          console.log("LINE User:", profile);
+          setIsLoggedIn(true);
+        }
+      } catch (err) {
+        console.error("LIFF Login Error:", err);
+      }
+    };
 
+    if (!isLoggedIn) {
+      loginWithLine();
+    }
+  }, [isLoggedIn, setIsLoggedIn]);
+
+  // 🧪 Give default points and energy
   useEffect(() => {
     if (isLoggedIn && points === 0 && energy === 0) {
       setPoints(1250);
@@ -28,16 +52,12 @@ export default function EnergyCloudApp({ currentPage = 'home' }: { currentPage?:
     }
   }, [isLoggedIn, points, energy, setPoints, setEnergy]);
 
-  const handleLineLogin = () => {
-    setIsLoggedIn(true);
-  };
-
   const handleWalletConnect = () => {
-    const dummyAddress = '0x' + Array(40).fill(0).map(() => Math.floor(Math.random() * 16).toString(16)).join('');
+    const dummyAddress = "0x" + Array(40).fill(0).map(() => Math.floor(Math.random() * 16).toString(16)).join("");
     setWalletAddress(dummyAddress);
     setIsWalletConnected(true);
   };
-  
+
   const handleEnergyTap = () => {
     if (energy > 0) {
       setEnergy((prev) => prev - 1);
@@ -47,7 +67,7 @@ export default function EnergyCloudApp({ currentPage = 'home' }: { currentPage?:
 
   const truncatedAddress = walletAddress
     ? `${walletAddress.substring(0, 6)}...${walletAddress.substring(walletAddress.length - 4)}`
-    : '';
+    : "";
 
   return (
     <div className="relative w-full max-w-sm mx-auto flex flex-col h-dvh text-foreground">
@@ -64,30 +84,31 @@ export default function EnergyCloudApp({ currentPage = 'home' }: { currentPage?:
 
           <main className="flex flex-col items-center text-center space-y-6">
             <div className="relative flex justify-center items-center mb-4">
-               <div className="absolute w-32 h-32 rounded-full animate-glow"></div>
-                <button
-                  onClick={handleEnergyTap}
-                  disabled={energy <= 0 || !isLoggedIn}
-                  className="relative text-primary transition-transform duration-100 ease-in-out active:scale-95 disabled:text-muted-foreground/50 disabled:cursor-not-allowed focus:outline-none"
-                  aria-label="Tap to get points"
-                >
-                  <CloudLightning size={96} strokeWidth={1.5} />
-                </button>
+              <div className="absolute w-32 h-32 rounded-full animate-glow"></div>
+              <button
+                onClick={handleEnergyTap}
+                disabled={energy <= 0 || !isLoggedIn}
+                className="relative text-primary transition-transform duration-100 ease-in-out active:scale-95 disabled:text-muted-foreground/50 disabled:cursor-not-allowed focus:outline-none"
+                aria-label="Tap to get points"
+              >
+                <CloudLightning size={96} strokeWidth={1.5} />
+              </button>
             </div>
 
             <h1 className="text-4xl font-bold font-headline text-primary">Energy Cloud</h1>
 
             {!isLoggedIn ? (
               <div className="w-full pt-4">
-                 <p className="text-muted-foreground mb-4">Login to manage your energy.</p>
-                 <Button onClick={handleLineLogin} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold">
-                  Login with LINE
-                </Button>
+                <p className="text-muted-foreground mb-4">Logging in with LINE...</p>
               </div>
             ) : (
               <div className="w-full space-y-6">
                 {!isWalletConnected && (
-                  <Button onClick={handleWalletConnect} variant="outline" className="w-full border-primary text-primary hover:bg-primary/10 hover:text-primary font-bold">
+                  <Button
+                    onClick={handleWalletConnect}
+                    variant="outline"
+                    className="w-full border-primary text-primary hover:bg-primary/10 hover:text-primary font-bold"
+                  >
                     <Wallet className="mr-2 h-4 w-4" />
                     Connect Wallet
                   </Button>
@@ -99,7 +120,7 @@ export default function EnergyCloudApp({ currentPage = 'home' }: { currentPage?:
                     <Coins className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{points.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2})}</div>
+                    <div className="text-2xl font-bold">{points.toLocaleString()}</div>
                     <p className="text-xs text-muted-foreground">Your current balance</p>
                   </CardContent>
                 </Card>
@@ -115,23 +136,35 @@ export default function EnergyCloudApp({ currentPage = 'home' }: { currentPage?:
                     <Progress value={(energy / maxEnergy) * 100} className="h-2 [&>div]:bg-primary" />
                   </CardContent>
                 </Card>
-
               </div>
             )}
           </main>
         </div>
       </div>
+
       <footer className="fixed bottom-0 left-0 right-0 w-full max-w-sm mx-auto bg-background/80 backdrop-blur-sm border-t border-border">
         <nav className="flex justify-around items-center p-2">
-          <Button variant="ghost" className={`flex flex-col h-auto items-center gap-1 ${currentPage === 'home' ? 'text-primary' : 'text-muted-foreground hover:text-primary'}`} onClick={() => router.push('/')}>
+          <Button
+            variant="ghost"
+            className={`flex flex-col h-auto items-center gap-1 ${currentPage === "home" ? "text-primary" : "text-muted-foreground hover:text-primary"}`}
+            onClick={() => router.push("/")}
+          >
             <Home className="h-6 w-6" />
             <span className="text-xs">Home</span>
           </Button>
-          <Button variant="ghost" className={`flex flex-col h-auto items-center gap-1 ${currentPage === 'quest' ? 'text-primary' : 'text-muted-foreground hover:text-primary'}`} onClick={() => router.push('/quest')}>
+          <Button
+            variant="ghost"
+            className={`flex flex-col h-auto items-center gap-1 ${currentPage === "quest" ? "text-primary" : "text-muted-foreground hover:text-primary"}`}
+            onClick={() => router.push("/quest")}
+          >
             <Map className="h-6 w-6" />
             <span className="text-xs">Quest</span>
           </Button>
-          <Button variant="ghost" className={`flex flex-col h-auto items-center gap-1 ${currentPage === 'boost' ? 'text-primary' : 'text-muted-foreground hover:text-primary'}`} onClick={() => router.push('/boost')}>
+          <Button
+            variant="ghost"
+            className={`flex flex-col h-auto items-center gap-1 ${currentPage === "boost" ? "text-primary" : "text-muted-foreground hover:text-primary"}`}
+            onClick={() => router.push("/boost")}
+          >
             <Rocket className="h-6 w-6" />
             <span className="text-xs">Boost</span>
           </Button>
