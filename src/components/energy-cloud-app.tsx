@@ -1,18 +1,20 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { CloudLightning, Wallet, Zap, Coins, Home, Map, Rocket } from 'lucide-react';
 
-export default function EnergyCloudApp() {
+export default function EnergyCloudApp({ currentPage = 'home' }: { currentPage?: 'home' | 'quest' | 'boost' }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isWalletConnected, setIsWalletConnected] = useState(false);
   const [walletAddress, setWalletAddress] = useState('');
   const [points, setPoints] = useState(0);
   const [energy, setEnergy] = useState(0);
   const maxEnergy = 1000;
+  const router = useRouter();
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -116,11 +118,11 @@ export default function EnergyCloudApp() {
       </div>
       <footer className="fixed bottom-0 left-0 right-0 w-full max-w-sm mx-auto bg-background/80 backdrop-blur-sm border-t border-border">
         <nav className="flex justify-around items-center p-2">
-          <Button variant="ghost" className="flex flex-col h-auto items-center gap-1 text-primary">
+          <Button variant="ghost" className={`flex flex-col h-auto items-center gap-1 ${currentPage === 'home' ? 'text-primary' : 'text-muted-foreground hover:text-primary'}`} onClick={() => router.push('/')}>
             <Home className="h-6 w-6" />
             <span className="text-xs">Home</span>
           </Button>
-          <Button variant="ghost" className="flex flex-col h-auto items-center gap-1 text-muted-foreground hover:text-primary">
+          <Button variant="ghost" className={`flex flex-col h-auto items-center gap-1 ${currentPage === 'quest' ? 'text-primary' : 'text-muted-foreground hover:text-primary'}`} onClick={() => router.push('/quest')}>
             <Map className="h-6 w-6" />
             <span className="text-xs">Quest</span>
           </Button>
