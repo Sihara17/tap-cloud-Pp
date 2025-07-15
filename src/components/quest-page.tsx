@@ -1,11 +1,13 @@
+
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Home, Map, Rocket, CheckCircle2, Gift } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
+import { useAppContext } from '@/context/app-context';
 
 const dailyRewards = [
   { day: 1, points: 5 },
@@ -20,22 +22,15 @@ const dailyRewards = [
 export default function QuestPage() {
   const router = useRouter();
   const { toast } = useToast();
-  const [loginStreak, setLoginStreak] = useState(0);
-  const [lastClaimed, setLastClaimed] = useState<string | null>(null);
-
-  useEffect(() => {
-    const storedStreak = localStorage.getItem('loginStreak');
-    const storedLastClaimed = localStorage.getItem('lastClaimed');
-
-    if (storedStreak) {
-      setLoginStreak(parseInt(storedStreak, 10));
-    }
-    if (storedLastClaimed) {
-      setLastClaimed(storedLastClaimed);
-    }
-  }, []);
+  const { 
+    isLoggedIn,
+    setPoints,
+    loginStreak, setLoginStreak, 
+    lastClaimed, setLastClaimed 
+  } = useAppContext();
 
   const isToday = (dateString: string) => {
+    if (!dateString) return false;
     const date = new Date(dateString);
     const today = new Date();
     return date.getFullYear() === today.getFullYear() &&
@@ -44,6 +39,7 @@ export default function QuestPage() {
   };
 
   const isYesterday = (dateString: string) => {
+    if (!dateString) return false;
     const date = new Date(dateString);
     const today = new Date();
     const yesterday = new Date(today);
@@ -54,15 +50,31 @@ export default function QuestPage() {
   };
   
   const canClaimToday = !lastClaimed || !isToday(lastClaimed);
-  const currentDayIndex = (lastClaimed && isYesterday(lastClaimed) ? loginStreak : (canClaimToday ? loginStreak : loginStreak-1)) % 7;
 
+  // Logic to reset streak if a day is missed
+  useEffect(() => {
+    if (lastClaimed && !isToday(lastClaimed) && !isYesterday(lastClaimed)) {
+      setLoginStreak(0);
+    }
+  }, [lastClaimed, setLoginStreak]);
 
-  const handleClaim = (rewardDay: number, points: number) => {
+  const currentDayIndex = loginStreak % 7;
+
+  const handleClaim = (rewardDay: number, rewardPoints: number) => {
+    if (!isLoggedIn) {
+         toast({
+            variant: "destructive",
+            title: "Not Logged In",
+            description: "You must be logged in to claim rewards.",
+        });
+        return;
+    }
+    
     if (!canClaimToday || rewardDay - 1 !== currentDayIndex) {
         toast({
             variant: "destructive",
             title: "Cannot Claim Reward",
-            description: rewardDay - 1 === loginStreak -1 ? "You have already claimed your reward for today." : "You must claim rewards in order.",
+            description: rewardDay - 1 < currentDayIndex ? "You have already claimed your reward for today." : "You must claim rewards in order.",
         });
       return;
     }
@@ -72,15 +84,11 @@ export default function QuestPage() {
     
     setLoginStreak(newStreak);
     setLastClaimed(today);
-
-    localStorage.setItem('loginStreak', newStreak.toString());
-    localStorage.setItem('lastClaimed', today);
+    setPoints(prev => prev + rewardPoints);
     
-    // In a real app, you would update the user's points on the server.
-    // For now, we just show a notification.
     toast({
         title: "Reward Claimed!",
-        description: `You've earned ${points} points!`,
+        description: `You've earned ${rewardPoints} points!`,
     });
   };
 
@@ -102,16 +110,19 @@ export default function QuestPage() {
                 </CardHeader>
                 <CardContent className="grid grid-cols-4 gap-3 text-center">
                     {dailyRewards.map((reward, index) => {
-                        const isClaimed = index < loginStreak;
+                        const isClaimedForThisCycle = index < currentDayIndex;
+                        const hasClaimedToday = lastClaimed && isToday(lastClaimed);
+                        const isClaimed = hasClaimedToday ? index <= currentDayIndex : isClaimedForThisCycle;
+                        
                         const isTodayClaimable = canClaimToday && index === currentDayIndex;
 
                         return (
                             <div key={reward.day} className="flex flex-col items-center gap-2">
-                                <div className={`relative w-16 h-16 rounded-lg flex flex-col items-center justify-center p-2 transition-all
+                                <div className={`relative w-16 h-16 rounded-lg flex flex-col items-center justify-center p-2 transition-all border
                                     ${isClaimed ? 'bg-primary/20 border-primary/50' : 'bg-card/50 border-border'}
-                                    ${isTodayClaimable ? 'border-primary animate-pulse' : 'border'}`}>
+                                    ${isTodayClaimable && isLoggedIn ? 'border-primary animate-pulse' : ''}`}>
                                     
-                                    {isClaimed && !isTodayClaimable && (
+                                    {isClaimed && (
                                         <div className="absolute inset-0 bg-black/50 rounded-lg flex items-center justify-center">
                                             <CheckCircle2 className="h-8 w-8 text-primary"/>
                                         </div>
@@ -123,7 +134,7 @@ export default function QuestPage() {
                                  <Button 
                                     size="sm"
                                     className="w-full text-xs h-7"
-                                    disabled={!isTodayClaimable}
+                                    disabled={!isTodayClaimable || !isLoggedIn}
                                     onClick={() => handleClaim(reward.day, reward.points)}>
                                         {isClaimed ? 'Claimed' : 'Claim'}
                                  </Button>

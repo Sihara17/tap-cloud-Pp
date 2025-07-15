@@ -1,27 +1,32 @@
+
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { CloudLightning, Wallet, Zap, Coins, Home, Map, Rocket } from 'lucide-react';
+import { useAppContext } from '@/context/app-context';
 
 export default function EnergyCloudApp({ currentPage = 'home' }: { currentPage?: 'home' | 'quest' | 'boost' }) {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isWalletConnected, setIsWalletConnected] = useState(false);
-  const [walletAddress, setWalletAddress] = useState('');
-  const [points, setPoints] = useState(0);
-  const [energy, setEnergy] = useState(0);
-  const maxEnergy = 1000;
   const router = useRouter();
+  const {
+    isLoggedIn, setIsLoggedIn,
+    isWalletConnected, setIsWalletConnected,
+    walletAddress, setWalletAddress,
+    points, setPoints,
+    energy, setEnergy,
+    maxEnergy
+  } = useAppContext();
+
 
   useEffect(() => {
-    if (isLoggedIn) {
+    if (isLoggedIn && points === 0 && energy === 0) {
       setPoints(1250);
       setEnergy(450);
     }
-  }, [isLoggedIn]);
+  }, [isLoggedIn, points, energy, setPoints, setEnergy]);
 
   const handleLineLogin = () => {
     setIsLoggedIn(true);
