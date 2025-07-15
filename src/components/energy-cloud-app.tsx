@@ -99,7 +99,7 @@ export default function EnergyCloudApp({ currentPage = 'home' }: { currentPage?:
                     <Coins className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{points.toLocaleString()}</div>
+                    <div className="text-2xl font-bold">{points.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2})}</div>
                     <p className="text-xs text-muted-foreground">Your current balance</p>
                   </CardContent>
                 </Card>
@@ -131,7 +131,7 @@ export default function EnergyCloudApp({ currentPage = 'home' }: { currentPage?:
             <Map className="h-6 w-6" />
             <span className="text-xs">Quest</span>
           </Button>
-          <Button variant="ghost" className="flex flex-col h-auto items-center gap-1 text-muted-foreground hover:text-primary">
+          <Button variant="ghost" className={`flex flex-col h-auto items-center gap-1 ${currentPage === 'boost' ? 'text-primary' : 'text-muted-foreground hover:text-primary'}`} onClick={() => router.push('/boost')}>
             <Rocket className="h-6 w-6" />
             <span className="text-xs">Boost</span>
           </Button>

@@ -12,6 +12,8 @@ interface AppContextType {
   setWalletAddress: React.Dispatch<React.SetStateAction<string>>;
   points: number;
   setPoints: React.Dispatch<React.SetStateAction<number>>;
+  pointsPerSecond: number;
+  setPointsPerSecond: React.Dispatch<React.SetStateAction<number>>;
   energy: number;
   setEnergy: React.Dispatch<React.SetStateAction<number>>;
   maxEnergy: number;
@@ -28,6 +30,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [isWalletConnected, setIsWalletConnected] = useState(false);
   const [walletAddress, setWalletAddress] = useState('');
   const [points, setPoints] = useState(0);
+  const [pointsPerSecond, setPointsPerSecond] = useState(0);
   const [energy, setEnergy] = useState(0);
   const maxEnergy = 1000;
 
@@ -44,10 +47,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     const storedEnergy = localStorage.getItem('energy');
     const storedWalletAddress = localStorage.getItem('walletAddress');
     const storedIsWalletConnected = localStorage.getItem('isWalletConnected') === 'true';
+    const storedPointsPerSecond = localStorage.getItem('pointsPerSecond');
     
     if (storedIsLoggedIn) {
-        setPoints(storedPoints ? parseInt(storedPoints, 10) : 1250);
+        setPoints(storedPoints ? parseFloat(storedPoints) : 1250);
         setEnergy(storedEnergy ? parseInt(storedEnergy, 10) : 450);
+        setPointsPerSecond(storedPointsPerSecond ? parseFloat(storedPointsPerSecond) : 0);
         if (storedIsWalletConnected && storedWalletAddress) {
             setIsWalletConnected(true);
             setWalletAddress(storedWalletAddress);
@@ -70,14 +75,26 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         localStorage.setItem('isLoggedIn', 'true');
         localStorage.setItem('points', points.toString());
         localStorage.setItem('energy', energy.toString());
+        localStorage.setItem('pointsPerSecond', pointsPerSecond.toString());
       } else {
           localStorage.removeItem('isLoggedIn');
           localStorage.removeItem('points');
           localStorage.removeItem('energy');
           localStorage.removeItem('walletAddress');
           localStorage.removeItem('isWalletConnected');
+          localStorage.removeItem('pointsPerSecond');
       }
-  }, [isLoggedIn, points, energy]);
+  }, [isLoggedIn, points, energy, pointsPerSecond]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (isLoggedIn && pointsPerSecond > 0) {
+        setPoints(prev => prev + pointsPerSecond);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isLoggedIn, pointsPerSecond, setPoints]);
 
   useEffect(() => {
       if(isWalletConnected && walletAddress) {
@@ -101,6 +118,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     isWalletConnected, setIsWalletConnected,
     walletAddress, setWalletAddress,
     points, setPoints,
+    pointsPerSecond, setPointsPerSecond,
     energy, setEnergy,
     maxEnergy,
     loginStreak, setLoginStreak,
