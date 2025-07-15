@@ -1,3 +1,9 @@
+import EnergyCloudApp from "@/components/energy-cloud-app";
+
 export default function Home() {
-  return <></>;
+  return (
+    <main className="flex min-h-screen w-full items-center justify-center bg-background">
+      <EnergyCloudApp />
+    </main>
+  );
 }
