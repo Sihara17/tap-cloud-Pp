@@ -94,7 +94,7 @@ export default function EnergyCloudApp({ currentPage = "home" }: { currentPage?:
                <img
                src="/logo1.png"
                 alt="Tap Logo"
-               className="w-24 h-24 object-contain rounded-full"
+               className="w-32 h-32 object-contain rounded-full"
               />
              </button>
 
