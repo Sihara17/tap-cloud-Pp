@@ -82,27 +82,18 @@ export default function EnergyCloudApp({ currentPage = "home" }: { currentPage?:
             )}
           </header>
 
-          export default function Home() {
-  return (
-    <main className="flex flex-col items-center text-center space-y-6">
-      <div className="relative flex justify-center items-center mb-4">
-        <div className="absolute w-32 h-32 rounded-full animate-glow"></div>
-        <button
-          onClick={handleEnergyTap}
-          disabled={energy <= 0 || !isLoggedIn}
-          className="relative transition-transform duration-100 ease-in-out active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none"
-          aria-label="Tap to get points"
-        >
-          <img
-            src="/logo1.png"
-            alt="Tap Logo"
-            className="w-24 h-24 object-contain"
-          />
-        </button>
-      </div>
-    </main>
-  );
-}
+          <main className="flex flex-col items-center text-center space-y-6">
+            <div className="relative flex justify-center items-center mb-4">
+              <div className="absolute w-32 h-32 rounded-full animate-glow"></div>
+              <button
+                onClick={handleEnergyTap}
+                disabled={energy <= 0 || !isLoggedIn}
+                className="relative text-primary transition-transform duration-100 ease-in-out active:scale-95 disabled:text-muted-foreground/50 disabled:cursor-not-allowed focus:outline-none"
+                aria-label="Tap to get points"
+              >
+                <CloudLightning size={96} strokeWidth={1.5} />
+              </button>
+            </div>
 
             <h1 className="text-4xl font-bold font-headline text-primary">TapCloud</h1>
 
