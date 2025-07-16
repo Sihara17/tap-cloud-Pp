@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { CloudLightning, Wallet, Zap, Coins, Home, Map, Rocket } from "lucide-react";
+import { Wallet, Zap, Coins, Home, Map, Rocket } from "lucide-react";
 import { useAppContext } from "@/context/app-context";
 import { initLiff } from "@/lib/liff";
 
