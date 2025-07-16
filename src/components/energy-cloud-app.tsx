@@ -91,7 +91,7 @@ export default function EnergyCloudApp({ currentPage = "home" }: { currentPage?:
                 className="relative text-primary transition-transform duration-100 ease-in-out active:scale-95 disabled:text-muted-foreground/50 disabled:cursor-not-allowed focus:outline-none"
                 aria-label="Tap to get points"
               >
-                <TapCloud size={96} strokeWidth={1.5} />
+                <CloudLightning size={96} strokeWidth={1.5} />
               </button>
             </div>
 
