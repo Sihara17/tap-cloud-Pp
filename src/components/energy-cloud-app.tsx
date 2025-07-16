@@ -91,12 +91,12 @@ export default function EnergyCloudApp({ currentPage = "home" }: { currentPage?:
   className="relative transition-transform duration-100 ease-in-out active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none"
   aria-label="Tap to get points"
 >
-  <img
-    src="/logo1.png"
-    alt="Tap Logo"
-    className="w-24 h-24 object-contain"
-  />
-</button>
+               <img
+               src="/logo1.png"
+                alt="Tap Logo"
+               className="w-24 h-24 object-contain rounded-full"
+              />
+             </button>
 
             </div>
 
