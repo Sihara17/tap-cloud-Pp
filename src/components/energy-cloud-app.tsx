@@ -47,8 +47,8 @@ export default function EnergyCloudApp({ currentPage = "home" }: { currentPage?:
   // 🧪 Give default points and energy
   useEffect(() => {
     if (isLoggedIn && points === 0 && energy === 0) {
-      setPoints(1250);
-      setEnergy(450);
+      setPoints(0);
+      setEnergy(1000);
     }
   }, [isLoggedIn, points, energy, setPoints, setEnergy]);
 
