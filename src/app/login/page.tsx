@@ -1,23 +1,23 @@
-// app/login/page.tsx
 "use client";
 
-import { useEffect } from "react";
 import { initLiff, getLoginUrl } from "@/lib/liff";
 
 export default function Login() {
-  useEffect(() => {
-    const doLogin = async () => {
-      try {
-        await initLiff(); // Inisialisasi LIFF
-        const url = getLoginUrl();
-        window.location.href = url; // Redirect ke halaman login LINE
-      } catch (err) {
-        console.error("Failed to login with LINE:", err);
-      }
-    };
+  const handleLogin = async () => {
+    try {
+      await initLiff();
+      const url = getLoginUrl();
+      window.location.href = url;
+    } catch (err) {
+      console.error("Login failed", err);
+    }
+  };
 
-    doLogin();
-  }, []);
-
-  return <p>Redirecting to LINE...</p>;
+  return (
+    <div className="p-4">
+      <button onClick={handleLogin} className="bg-green-500 text-white px-4 py-2 rounded">
+        Login with LINE
+      </button>
+    </div>
+  );
 }
