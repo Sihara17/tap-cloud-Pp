@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { CloudLightning, Wallet, Zap, Coins, Home, Map, Rocket } from "lucide-react";
 import { useAppContext } from "@/context/app-context";
-import { initLiff } from "@/lib/liff";
+import { getLoginUrl } from "@/lib/liff";
 
 export default function EnergyCloudApp({ currentPage = "home" }: { currentPage?: "home" | "quest" | "boost" }) {
   const router = useRouter();
@@ -25,26 +25,39 @@ export default function EnergyCloudApp({ currentPage = "home" }: { currentPage?:
     maxEnergy,
   } = useAppContext();
 
-  // 🚀 Auto login LINE on load
+  // 🚀 LINE login with token
   useEffect(() => {
     const loginWithLine = async () => {
-      try {
-        const profile = await initLiff();
-        if (profile) {
-          console.log("LINE User:", profile);
-          setIsLoggedIn(true);
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get("token");
+
+      if (token) {
+        try {
+          const res = await fetch(`/api/line-profile?token=${token}`);
+          const data = await res.json();
+
+          if (res.ok) {
+            console.log("LINE User:", data);
+            setIsLoggedIn(true);
+            setWalletAddress(data.walletAddress || ""); // optional
+          } else {
+            console.error("LINE Login Failed:", data.error);
+          }
+        } catch (err) {
+          console.error("LINE Login Error:", err);
         }
-      } catch (err) {
-        console.error("LIFF Login Error:", err);
+      } else {
+        const loginUrl = getLoginUrl();
+        window.location.href = loginUrl;
       }
     };
 
     if (!isLoggedIn) {
       loginWithLine();
     }
-  }, [isLoggedIn, setIsLoggedIn]);
+  }, [isLoggedIn, setIsLoggedIn, setWalletAddress]);
 
-  // 🧪 Give default points and energy
+  // 🧪 Default energy & points
   useEffect(() => {
     if (isLoggedIn && points === 0 && energy === 0) {
       setPoints(0);
@@ -86,18 +99,17 @@ export default function EnergyCloudApp({ currentPage = "home" }: { currentPage?:
             <div className="relative flex justify-center items-center mb-4">
               <div className="absolute w-32 h-32 rounded-full animate-glow"></div>
               <button
-  onClick={handleEnergyTap}
-  disabled={energy <= 0 || !isLoggedIn}
-  className="relative transition-transform duration-100 ease-in-out active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none"
-  aria-label="Tap to get points"
->
-               <img
-               src="/logo1.png"
-                alt="Tap Logo"
-               className="w-32 h-32 object-contain rounded-full"
-              />
-             </button>
-
+                onClick={handleEnergyTap}
+                disabled={energy <= 0 || !isLoggedIn}
+                className="relative transition-transform duration-100 ease-in-out active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none"
+                aria-label="Tap to get points"
+              >
+                <img
+                  src="/logo1.png"
+                  alt="Tap Logo"
+                  className="w-32 h-32 object-contain rounded-full"
+                />
+              </button>
             </div>
 
             <h1 className="text-4xl font-bold font-headline text-primary">TapCloud</h1>
