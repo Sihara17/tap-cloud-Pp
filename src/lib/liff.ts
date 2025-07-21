@@ -1,21 +1,25 @@
 // lib/liff.ts
-import liff from "@line/liff";
+import { LineDappSDK } from "@linenext/dapp-portal-sdk";
 
 export async function initLiff() {
-  const liffId = process.env.NEXT_PUBLIC_LIFF_ID;
-  if (!liffId) throw new Error("LIFF ID is missing");
+  const clientId = process.env.NEXT_PUBLIC_LINE_CLIENT_ID;
+  const redirectUri = process.env.NEXT_PUBLIC_APP_URL;
 
-  await liff.init({ liffId });
-
-  if (!liff.isLoggedIn()) {
-    liff.login();
-    return null;
+  if (!clientId || !redirectUri) {
+    throw new Error("Missing LINE SDK environment variables");
   }
 
-  const profile = await liff.getProfile();
+  const sdk = new LineDappSDK({
+    clientId,
+    redirectUri,
+  });
+
+  const profile = await sdk.getProfile();
+
   return {
     userId: profile.userId,
     name: profile.displayName,
     avatar: profile.pictureUrl,
+    walletAddress: profile.walletAddress, // opsional jika tersedia
   };
 }
