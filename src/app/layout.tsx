@@ -25,7 +25,7 @@ description: "Play and earn your TapCloud energy! Login with LINE and enjoy your
   twitter: {
     card: "summary_large_image",
     title: "TapCloud – Tap to Earn",
-    description: play and earn your tapcloud energy! login with line and enhoy your game full rewards",
+    description: "play and earn your tapcloud energy! login with line and enhoy your game full rewards",
     images: ["https://tap-cloud-pp.vercel.app/logo1.png"],
   },
 };
