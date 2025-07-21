@@ -1,7 +1,8 @@
 // app/login/page.tsx
 "use client";
 import { useEffect } from "react";
-import { line } from "@/lib/liff";
+import { initLiff, getLoginUrl } from "@/lib/liff";
+
 
 export default function Login() {
   useEffect(() => {
@@ -9,4 +10,8 @@ export default function Login() {
   }, []);
 
   return <p>Redirecting to LINE...</p>;
+}
+function handleLogin() {
+  const url = getLoginUrl();
+  window.location.href = url;
 }
