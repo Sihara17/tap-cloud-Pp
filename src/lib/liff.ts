@@ -1,5 +1,4 @@
-
-// lib/liff.ts
+lib/liff.ts
 import LineDappSDK from "@linenext/dapp-portal-sdk";
 let sdk: LineDappSDK | null = null;
 

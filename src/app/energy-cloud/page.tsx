@@ -5,11 +5,16 @@ import { initLiff } from "@/lib/liff";
 
 export default function EnergyCloudPage() {
   const [ready, setReady] = useState(false);
+  const [user, setUser] = useState<any>(null); // Add a state to store user data
 
   useEffect(() => {
     async function fetchUser() {
       try {
-        await initLiff();
+        // Only call initLiff on the client side
+        if (typeof window !== 'undefined') {
+          const profile = await initLiff();
+          setUser(profile); // Store the user data
+        }
       } catch (err) {
         console.warn("initLiff failed", err);
       } finally {
@@ -22,6 +27,7 @@ export default function EnergyCloudPage() {
 
   if (!ready) return <div className="p-4">Loading...</div>;
 
+  // You can now use the 'user' state to display user-specific information
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-blue-100 to-white px-4 py-8">
       <h1 className="text-3xl font-bold text-blue-700 mb-4">Energy Cloud</h1>
