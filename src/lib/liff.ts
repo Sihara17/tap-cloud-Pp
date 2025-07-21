@@ -1,3 +1,4 @@
+
 // lib/liff.ts
 import { LineDappSDK } from "@linenext/dapp-portal-sdk";
 
@@ -12,7 +13,6 @@ function getEnv(name: string) {
 export function getLoginUrl() {
   const clientId = getEnv("NEXT_PUBLIC_LINE_CLIENT_ID");
   const redirectUri = getEnv("NEXT_PUBLIC_APP_URL");
-
   const state = Math.random().toString(36).substring(2, 15);
   const scope = "openid profile";
   const responseType = "code";
