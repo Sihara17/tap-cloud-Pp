@@ -5,15 +5,15 @@ import { AppProvider } from '@/context/app-context';
 
 export const metadata: Metadata = {
   title: "TapCloud – Tap to Earn",
-  description: "play and earn your tapcloud energy! login with line and enhoy your game full rewards",
-  openGraph: {
+description: "Play and earn your TapCloud energy! Login with LINE and enjoy your game full rewards",
+ openGraph: {
     title: "TapCloud – Tap to Earn",
     description: "play and earn your tapcloud energy! login with line and enhoy your game full rewards",    
     url: "https://tap-cloud-pp.vercel.app/", // GANTI dengan URL final
     siteName: "TapCloud",
     images: [
       {
-        url: "https://your-app.vercel.app/og-image.png", // Upload og-image ke /public
+        url: "https://tap-cloud-pp.vercel.app/logo1.png", // Upload og-image ke /public
         width: 1200,
         height: 630,
         alt: "TapCloud OpenGraph Image",
