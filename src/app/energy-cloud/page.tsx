@@ -1,45 +1,26 @@
-// app/energy-cloud/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
-import { getLoginUrl } from "@/lib/liff";
-import LoginButton from "@/components/LoginButton";
+import { initLiff } from "@/lib/liff";
 
 export default function EnergyCloudPage() {
-  const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const stored = localStorage.getItem("line-profile");
-    if (stored) {
-      setUser(JSON.parse(stored));
-      setLoading(false);
-    } else {
-      // Redirect ke LINE login jika belum login
-      window.location.href = getLoginUrl();
+    async function fetchProfile() {
+      const profile = await initLiff();
+      setUser(profile);
     }
+
+    fetchProfile();
   }, []);
 
-  if (loading) return <div className="p-4">Loading...</div>;
-
-  if (!user) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <LoginButton />
-      </div>
-    );
-  }
+  if (!user) return <div>Loading...</div>;
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-100 to-blue-300 p-4">
-      <h1 className="text-3xl font-bold text-center mb-4">Welcome to Energy Cloud</h1>
-      <img
-        src={user.avatar}
-        alt="Avatar"
-        className="w-24 h-24 rounded-full shadow-lg mb-2"
-      />
-      <p className="text-xl font-medium">{user.name}</p>
-      <p className="text-sm text-gray-600">Wallet: {user.walletAddress}</p>
+    <div>
+      <h1>Welcome {user.name}</h1>
+      {/* show wallet etc */}
     </div>
   );
 }
