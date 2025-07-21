@@ -1,7 +1,8 @@
+// app/energy-cloud/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
-import { initLiff } from "@/lib/liff";
+import { getLoginUrl } from "@/lib/liff";
 import LoginButton from "@/components/LoginButton";
 
 export default function EnergyCloudPage() {
@@ -10,24 +11,12 @@ export default function EnergyCloudPage() {
 
   useEffect(() => {
     const stored = localStorage.getItem("line-profile");
-
     if (stored) {
       setUser(JSON.parse(stored));
       setLoading(false);
     } else {
-      async function fetchUser() {
-        try {
-          const profile = await initLiff();
-          localStorage.setItem("line-profile", JSON.stringify(profile));
-          setUser(profile);
-        } catch (err) {
-          console.warn("User not logged in.");
-        } finally {
-          setLoading(false);
-        }
-      }
-
-      fetchUser();
+      // Redirect ke LINE login jika belum login
+      window.location.href = getLoginUrl();
     }
   }, []);
 
