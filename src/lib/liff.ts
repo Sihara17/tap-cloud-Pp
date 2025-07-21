@@ -1,7 +1,6 @@
 
 // lib/liff.ts
-import { LineDappSDK } from "@linenext/dapp-portal-sdk";
-
+import LineDappSDK from "@linenext/dapp-portal-sdk";
 let sdk: LineDappSDK | null = null;
 
 function getEnv(name: string) {
