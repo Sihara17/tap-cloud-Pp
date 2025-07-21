@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "TapCloud – Tap to Earn",
     description: play and earn your tapcloud energy! login with line and enhoy your game full rewards",
-    images: ["https://your-app.vercel.app/og-image.png"],
+    images: ["https://tap-cloud-pp.vercel.app/logo1.png"],
   },
 };
 
