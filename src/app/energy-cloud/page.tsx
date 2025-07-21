@@ -1,26 +1,27 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import EnergyCloudApp from "@/components/energy-cloud-app";
 import { initLiff } from "@/lib/liff";
 
 export default function EnergyCloudPage() {
-  const [user, setUser] = useState(null);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    async function fetchProfile() {
-      const profile = await initLiff();
-      setUser(profile);
+    async function fetchUser() {
+      try {
+        await initLiff();
+      } catch (err) {
+        console.warn("initLiff failed", err);
+      } finally {
+        setReady(true);
+      }
     }
 
-    fetchProfile();
+    fetchUser();
   }, []);
 
-  if (!user) return <div>Loading...</div>;
+  if (!ready) return <div className="p-4">Loading...</div>;
 
-  return (
-    <div>
-      <h1>Welcome {user.name}</h1>
-      {/* show wallet etc */}
-    </div>
-  );
+  return <EnergyCloudApp currentPage="home" />;
 }
