@@ -1,5 +1,5 @@
 // lib/liff.ts
-import { LineDapp } from "@linenext/dapp-portal-sdk";
+import { LineDappSDK } from "@linenext/dapp-portal-sdk";
 
 const clientId = process.env.NEXT_PUBLIC_LINE_CLIENT_ID!;
 const clientSecret = process.env.NEXT_PUBLIC_LINE_CLIENT_SECRET!;
