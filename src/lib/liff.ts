@@ -1,31 +1,48 @@
 // lib/liff.ts
 import { LineDappSDK } from "@linenext/dapp-portal-sdk";
 
-const clientId = process.env.NEXT_PUBLIC_LINE_CLIENT_ID!;
-const clientSecret = process.env.NEXT_PUBLIC_LINE_CLIENT_SECRET!;
-const redirectUri = process.env.NEXT_PUBLIC_APP_URL + "/login-callback";
+let sdk: LineDappSDK | null = null;
 
-if (!clientId || !clientSecret || !redirectUri) {
-  throw new Error("Missing LINE env variables");
+function getEnv(name: string) {
+  const value = process.env[name];
+  if (!value) throw new Error(`Missing env: ${name}`);
+  return value;
 }
 
-const line = new LineDapp({
-  dappId: clientId,
-  clientSecret,
-  redirectUri,
-});
+export function getLoginUrl() {
+  const clientId = getEnv("NEXT_PUBLIC_LINE_CLIENT_ID");
+  const redirectUri = getEnv("NEXT_PUBLIC_APP_URL");
+
+  const state = Math.random().toString(36).substring(2, 15);
+  const scope = "openid profile";
+  const responseType = "code";
+
+  return `https://access.line.me/oauth2/v2.1/authorize?response_type=${responseType}&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&state=${state}&scope=${scope}`;
+}
 
 export async function initLiff() {
-  const token = await line.getAccessTokenFromCallback();
-  const profile = await line.getUserProfile(token.accessToken);
+  const clientId = getEnv("NEXT_PUBLIC_LINE_CLIENT_ID");
+  const clientSecret = getEnv("LINE_CLIENT_SECRET");
+  const redirectUri = getEnv("NEXT_PUBLIC_APP_URL");
+  const dappId = getEnv("LINE_DAPP_ID");
+  const dappName = getEnv("LINE_DAPP_NAME");
+
+  if (!sdk) {
+    sdk = new LineDappSDK({
+      clientId,
+      clientSecret,
+      redirectUri,
+      dappId,
+      dappName,
+    });
+  }
+
+  const profile = await sdk.getProfile();
 
   return {
     userId: profile.userId,
     name: profile.displayName,
     avatar: profile.pictureUrl,
     walletAddress: profile.walletAddress,
-    accessToken: token.accessToken,
   };
 }
-
-export { line };
