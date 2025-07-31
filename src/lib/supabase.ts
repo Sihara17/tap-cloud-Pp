@@ -5,6 +5,7 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+// Fungsi untuk ambil atau buat user berdasarkan wallet
 export async function getOrCreateUser(wallet: string) {
   const { data, error } = await supabase
     .from('users')
@@ -37,4 +38,3 @@ export async function getOrCreateUser(wallet: string) {
 
   return createdUser;
 }
-
