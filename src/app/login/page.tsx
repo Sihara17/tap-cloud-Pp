@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import LoginButton from "@/components/LoginButton";
 
 export default function LoginPage() {
