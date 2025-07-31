@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import { sdk } from "@/lib/line";
+import sdk from "@linenext/dapp-portal-sdk";
 
 export default function HomePage() {
   const [address, setAddress] = useState<string | null>(null);
