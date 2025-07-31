@@ -1,49 +1,53 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { initLiff } from "@/lib/liff";
-import LoginButton from "@/components/LoginButton";
+import { supabase } from "@/lib/supabaseClient";
+import sdk from "@linenext/dapp-portal-sdk";
 
 export default function HomePage() {
-  const [user, setUser] = useState<any>(null);
+  const [points, setPoints] = useState<number | null>(null);
+  const [energy, setEnergy] = useState<number | null>(null);
+  const [address, setAddress] = useState<string>("");
 
   useEffect(() => {
-    const stored = localStorage.getItem("line-profile");
-    if (stored) {
-      setUser(JSON.parse(stored));
-      return;
-    }
+    const fetchData = async () => {
+      const walletProvider = sdk.getWalletProvider();
+      await walletProvider.connect(); // Pastikan terkoneksi
+      const addr = await walletProvider.getAddress();
+      setAddress(addr);
 
-    async function fetchLineUser() {
-      try {
-        const profile = await initLiff();
-        localStorage.setItem("line-profile", JSON.stringify(profile));
-        setUser(profile);
-      } catch (error) {
-        console.error("Not logged in yet.");
+      const { data, error } = await supabase
+        .from("users")
+        .select("points, energy")
+        .eq("wallet_address", addr)
+        .single();
+
+      if (data) {
+        setPoints(data.points);
+        setEnergy(data.energy);
       }
-    }
 
-    fetchLineUser();
+      if (error) {
+        console.error("Gagal fetch data:", error);
+      }
+    };
+
+    fetchData();
   }, []);
 
-  if (!user) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <LoginButton />
-      </div>
-    );
-  }
-
   return (
-    <div className="p-4 text-center">
-      <h1 className="text-2xl font-bold mb-2">Welcome, {user.name}</h1>
-      <img
-        src={user.avatar}
-        alt="Avatar"
-        className="w-24 h-24 rounded-full mx-auto"
-      />
-      <p className="mt-2 text-sm text-gray-500">Wallet: {user.walletAddress}</p>
-    </div>
+    <main className="flex flex-col items-center justify-center h-screen bg-blue-100">
+      <h1 className="text-3xl font-bold mb-4">🏠 Home Page</h1>
+      <p className="text-lg mb-2">Wallet Address: <span className="font-mono">{address}</span></p>
+
+      {points !== null && energy !== null ? (
+        <>
+          <p className="text-2xl">🔥 Energy: {energy}</p>
+          <p className="text-2xl">💰 Points: {points}</p>
+        </>
+      ) : (
+        <p>Loading user data...</p>
+      )}
+    </main>
   );
 }
