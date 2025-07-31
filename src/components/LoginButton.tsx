@@ -4,6 +4,8 @@ import sdk from "@linenext/dapp-portal-sdk";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
+import { getOrCreateUser } from "@/lib/supabase";
+
 
 export default function LoginButton() {
   const [walletType, setWalletType] = useState("");
@@ -38,7 +40,9 @@ export default function LoginButton() {
       console.error("Login gagal:", error);
     }
   };
-
+  // Setelah walletAddress berhasil didapat
+const user = await getOrCreateUser(walletAddress);
+console.log('User data:', user);
   return (
     <button
       onClick={handleLogin}
