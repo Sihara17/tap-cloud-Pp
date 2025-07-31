@@ -1,23 +1,13 @@
 "use client";
 
-import { initLiff, getLoginUrl } from "@/lib/liff";
+import LoginButton from "@/components/LoginButton";
 
-export default function Login() {
-  const handleLogin = async () => {
-    try {
-      await initLiff();
-      const url = getLoginUrl();
-      window.location.href = url;
-    } catch (err) {
-      console.error("Login failed", err);
-    }
-  };
-
+export default function LoginPage() {
   return (
-    <div className="p-4">
-      <button onClick={handleLogin} className="bg-green-500 text-white px-4 py-2 rounded">
-        Login with LINE
-      </button>
-    </div>
+    <main className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-green-100 to-green-300">
+      <h1 className="text-3xl font-bold mb-6 text-green-800">Welcome to TapCloud</h1>
+      <p className="text-lg text-green-700 mb-4">Please login with your LINE Wallet to continue</p>
+      <LoginButton />
+    </main>
   );
 }
