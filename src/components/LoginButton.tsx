@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { getOrCreateUser } from "@/lib/supabase";
 
-
 export default function LoginButton() {
   const [walletType, setWalletType] = useState("");
   const router = useRouter();
@@ -23,26 +22,28 @@ export default function LoginButton() {
 
     try {
       await walletProvider.connect();
-      const address = await walletProvider.getAddress();
+      const walletAddress = await walletProvider.getAddress();
 
       // Simpan ke Supabase (jika belum ada)
       await supabase.from("users").upsert(
         {
-          wallet_address: address,
+          wallet_address: walletAddress,
           points: 0,
           energy: 200,
         },
-        { onConflict: "wallet_address" } // supaya tidak dobel
+        { onConflict: "wallet_address" }
       );
+
+      // Tambahan: Ambil data user dari Supabase setelah login
+      const user = await getOrCreateUser(walletAddress);
+      console.log("User data:", user);
 
       router.push("/home");
     } catch (error) {
       console.error("Login gagal:", error);
     }
   };
-  // Setelah walletAddress berhasil didapat
-const user = await getOrCreateUser(walletAddress);
-console.log('User data:', user);
+
   return (
     <button
       onClick={handleLogin}
